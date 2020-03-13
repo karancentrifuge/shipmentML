@@ -6,8 +6,7 @@ group 'gov.cbp'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
-//compileJava.options.fork = true
-//compileJava.options.forkOptions.executable = "C:\\Java\\bin\\java.exe"
+
 
 repositories {
     mavenCentral()
@@ -19,4 +18,5 @@ dependencies {
     implementation 'org.nd4j:nd4j-native-platform:1.0.0-beta6'
     implementation group: 'org.datavec', name: 'datavec-api', version: '0.9.1'
     implementation group: 'junit', name: 'junit', version: '4.12'
+//    testCompile "gov.cbp:AnomalyDetection:1.0-SNAPSHOT"
 }

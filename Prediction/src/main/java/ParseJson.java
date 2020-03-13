@@ -1,8 +1,8 @@
 import com.google.gson.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.io.ClassPathResource;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 
@@ -11,10 +11,10 @@ public class ParseJson {
     private String[] removeFeats;
 
     public ParseJson(String filePath, String[] trivialFeats) throws Exception {
-        if (!(filePath instanceof String)){
+        if (!(filePath instanceof String)) {
             throw new Exception("Path is not a string.");
         }
-        if (!(trivialFeats instanceof String[])){
+        if (!(trivialFeats instanceof String[])) {
             throw new Exception("Features to remove are not an array of strings.");
 
         }
@@ -26,7 +26,7 @@ public class ParseJson {
     private JsonObject convertJsonElementToJsonObject() throws Exception {
         JsonParser parser;
         JsonElement jsonTree;
-        JsonObject jsonObj = null;
+        JsonObject jsonObj;
 
         if (!(path instanceof String)) {
             throw new Exception("Path is not a string.");
@@ -38,7 +38,7 @@ public class ParseJson {
     }
 
 
-    private INDArray convertToNpArray() throws Exception {
+    public INDArray convertToNpArray() throws Exception {
         Set<String> setOfTrivialFeats;
         JsonObject json;
         double[][] featureValues;
@@ -47,13 +47,13 @@ public class ParseJson {
 
         setOfTrivialFeats = new HashSet<String>(Arrays.asList(removeFeats));
 
-        json = new ParseJson(path, new String[]{"BaseDateTime", "VesselName",  "IMO", "CallSign", "Status", "timeDiff"}).convertJsonElementToJsonObject();
-        featureValues = new double[1][json.size()];
+        json = new ParseJson(path, new String[]{"BaseDateTime", "VesselName", "IMO", "CallSign", "Status", "timeDiff"}).convertJsonElementToJsonObject();
+        featureValues = new double[1][json.size() - setOfTrivialFeats.size()];
 
         gson = new GsonBuilder().setPrettyPrinting().create();
         counter = 0;
-        for (Map.Entry<String, JsonElement> entry : json.entrySet()){
-            if (!setOfTrivialFeats.contains(entry.getKey())){
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+            if (!setOfTrivialFeats.contains(entry.getKey())) {
                 String value = gson.fromJson(entry.getValue(), String.class);
                 featureValues[0][counter] = Double.parseDouble(value);
                 counter += 1;
@@ -64,7 +64,9 @@ public class ParseJson {
     }
 
     public static void main(String[] args) throws Exception {
-        ParseJson result = new ParseJson("C:\\Users\\18567\\shipmentML\\Prediction\\src\\main\\resources\\shipment.json", new String[] {"BaseDateTime", "VesselName", "IMO", "CallSign", "Status", "timeDiff"});
+        String path = new ClassPathResource("/liveData/shipment.json").getFile().getPath();
+        ParseJson result = new ParseJson(path, new String[]{"BaseDateTime", "VesselName", "IMO", "CallSign", "Status", "timeDiff"});
         System.out.println(result.convertToNpArray());
+//    }
     }
 }
